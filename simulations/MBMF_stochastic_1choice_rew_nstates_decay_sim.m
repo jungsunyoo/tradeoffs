@@ -1,4 +1,4 @@
-function output = MBMF_stochastic_1choice_rew_nstates_sim(x,rew, states_total, nstates)
+function output = MBMF_stochastic_1choice_rew_nstates_decay_sim(x,rew, states_total, nstates)
 
 % Mixed model-based / model-free simulation code for a task with stochastic
 % transitions, one choice at the second level, and points for the
@@ -12,6 +12,7 @@ function output = MBMF_stochastic_1choice_rew_nstates_sim(x,rew, states_total, n
 %       x(2) - learning rate
 %       x(3) - eligibility trace decay
 %       x(4) - mixing weight
+%       x(5) - decay rate gamma
 %   rews - [N x 2] array storing the rewards, where
 %       rews(n,s) is the payoff on trial n in second-level state s after 
 %       taking action a, where N is the number of trials
@@ -29,6 +30,7 @@ b = x(1);                   % softmax inverse temperature
 lr = x(2);                  % learning rate
 lambda = x(3);              % eligibility trace decay
 w = x(4);                   % mixing weight
+gamma = x(5);
 
 tr = 0.7;                   % common transition probability
 
@@ -45,7 +47,12 @@ output.S = zeros(N,1);
 output.C = zeros(N,1);
 
 % Jungsun Yoo added for multiple number of second states
-pairs = repmat(states_total, N/length(states_total), 1);
+
+
+d = floor(N/nchoosek(nstates,2));
+r = N - nchoosek(nstates,2)*d; % remainder
+pairs = repmat(states_total,d, 1);
+pairs = [pairs; states_total(1:r,:)];
 pairs = pairs(randperm(size(pairs,1)),:);
 
 states = pairs(:,1:2);
@@ -62,10 +69,12 @@ for t = 1:N
     
     
 %     Qmb = Tm' * Q2;
-    Qmb = Tm'*[Q2(planet1); Q2(planet2)];                                           % compute model-based value function
+%     Qmb = Tm'*[Q2(planet1); Q2(planet2)];                                           % compute model-based value function
+    Qmb = Tm * [Q2(planet1); Q2(planet2)];
     
     tr_prob = rand;
     Q = w*Qmb + (1-w)*Qmf(current_state_index,:)';
+%     Q = w*Qmb + (1-w)*Qmf(current_state_index,:)';
 %     Q = w*Qmb + (1-w)*Qmf';                                 % mix TD and model value
     if rand < exp(b*Q(1))/sum(exp(b*Q))                     % make choice using softmax
         a = 1;
@@ -99,9 +108,26 @@ for t = 1:N
     Q2(s) = Q2(s) + lr*dtQ(2);                          % update TD value function
     Qmf(current_state_index,a) = Qmf(current_state_index,a) + lambda*lr*dtQ(2);                     % eligibility trace
     
+    % Decaying unchosen states and/or action pairs for this trial
+    for s_ = 1:nstates
+        if s_ ~= s
+            Q2(s_) = Q2(s_) * gamma;
+        end
+    end
+    
+    for s_ = 1:length(states_total)
+        for a_ = 1:2
+            if s_~=current_state_index || a_~=a
+                Qmf(s_,a_) = Qmf(s_,a_) * gamma;
+            end
+        end
+    end
+            
+          
 %     Q2(s-1) = Q2(s-1) + lr*dtQ(2);                          % update TD value function
 %     Qmf(a) = Qmf(a) + lambda*lr*dtQ(2);                     % eligibility trace
-    
+% Qmf = zeros(length(states_total),2);
+% Q2 = zeros(nstates,1);    
     % store stuff
     output.A(t,1) = a;
     output.R(t,1) = r;
