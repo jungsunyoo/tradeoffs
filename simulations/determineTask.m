@@ -6,35 +6,41 @@ function data = determineTask
 % Wouter Kool, August 2016
 
 bounds = [];
-while (isempty(bounds)) || (bounds~=1&&bounds~=2)
-    bounds = input('Narrow ([.25 .75]; press 1) or broad ([0 1]; press 2) range of the reward distribution?  ');
-end
+% while (isempty(bounds)) || (bounds~=1&&bounds~=2)
+%     bounds = input('Narrow ([.25 .75]; press 1) or broad ([0 1]; press 2) range of the reward distribution?  ');
+% end
 
-if bounds == 1
-    bounds = [0.25 0.75];
-else
-    bounds = [0 1];
-end
+% if bounds == 1
+%     bounds = [0.25 0.75];
+% else
+%     bounds = [0 1];
+% end
+bounds = [0 1];
 
 sd = [];
-while (isempty(sd)) || (sd<=0)
-    sd = input('Drift rate of the reward distribution (>0)?  ');
-end
+% while (isempty(sd)) || (sd<=0)
+%     sd = input('Drift rate of the reward distribution (>0)?  ');
+% end
+sd = 0.2;
 
 structure = [];
-while (isempty(structure)) || (structure~=1&&structure~=2)
-    structure = input('Stochastic (1) or deterministic (2) task structure? ');
-end
+% while (isempty(structure)) || (structure~=1&&structure~=2)
+%     structure = input('Stochastic (1) or deterministic (2) task structure? ');
+% end
+structure = 1;
 
 choices = [];
-while (isempty(choices)) || (choices~=1&&choices~=2)
-    choices = input('One or two second-level choices?  ');
-end
+% while (isempty(choices)) || (choices~=1&&choices~=2)
+%     choices = input('One or two second-level choices?  ');
+% end
+
+choices = 1;
 
 rewards = [];
-while (isempty(rewards)) || (rewards~=1&&rewards~=2)
-    rewards = input('Reward probabilities (1) or points (2) for the second-level choices?  ');
-end
+% while (isempty(rewards)) || (rewards~=1&&rewards~=2)
+%     rewards = input('Reward probabilities (1) or points (2) for the second-level choices?  ');
+% end
+rewards = 2;
 
 simulationfunction = 'MBMF_';
 if structure == 1
