@@ -29,9 +29,12 @@ end
 
 figure;
 % surface(data.lrs,data.bs,mean(data.slope,3));
+zrange=[-0.5 0.5];
 surface(xax,yax,mean(p_data,3));
-caxis([-0.05 0.6]);
-zlim([-0.05 0.6]);
+% caxis([-0.05 0.6]);
+% zlim([-0.05 0.6]);
+caxis(zrange);
+zlim(zrange);
 colormap('jet');
 xlabel(xlab);
 ylabel('Remember parameter (gamma)');

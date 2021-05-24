@@ -8,8 +8,8 @@ function output = MBMF_stochastic_1choice_rew_nstates_decay_sim(x,rew, states_to
 %
 % INPUTS:
 %   x - [1 x 4] vector of parameters, where:
-%       x(1) - softmax inverse temperature
-%       x(2) - learning rate
+%       x(1) - learning rate
+%       x(2) - softmax inverse temperature
 %       x(3) - eligibility trace decay
 %       x(4) - mixing weight
 %       x(5) - decay rate gamma
@@ -26,8 +26,9 @@ function output = MBMF_stochastic_1choice_rew_nstates_decay_sim(x,rew, states_to
 % Wouter Kool, Aug 2016, based on code written by Sam Gershman
 
 % parameters
-b = x(1);                   % softmax inverse temperature
-lr = x(2);                  % learning rate
+lr = x(1);                  % learning rate
+b = x(2);                   % softmax inverse temperature
+
 lambda = x(3);              % eligibility trace decay
 w = x(4);                   % mixing weight
 gamma = x(5);
@@ -36,14 +37,15 @@ tr = 0.7;                   % common transition probability
 
 % initialization
 % Qmf = zeros(1,2);           % Q(s,a): state-action value function for Q-learning
-Qmf = zeros(length(states_total),2);
+Qmf = zeros(size(states_total,1),2);
 Q2 = zeros(nstates,1);
 % Tm = [.3 .7; .7 .3];        % transition matrix
 Tm = [.7 .3; .3 .7];
 N = size(rew,1);
-output.A = zeros(N,1);
-output.R = zeros(N,1);
-output.S = zeros(N,1);
+output.choices = zeros(N,1);
+output.rewards = zeros(N,1);
+output.first_state = zeros(N,3);
+output.second_state = zeros(N,1);
 output.C = zeros(N,1);
 
 % Jungsun Yoo added for multiple number of second states
@@ -111,14 +113,14 @@ for t = 1:N
     % Decaying unchosen states and/or action pairs for this trial
     for s_ = 1:nstates
         if s_ ~= s
-            Q2(s_) = Q2(s_) * gamma;
+            Q2(s_) = Q2(s_) * (1-gamma);
         end
     end
     
-    for s_ = 1:length(states_total)
+    for s_ = 1:size(states_total,1)
         for a_ = 1:2
             if s_~=current_state_index || a_~=a
-                Qmf(s_,a_) = Qmf(s_,a_) * gamma;
+                Qmf(s_,a_) = Qmf(s_,a_) * (1-gamma);
             end
         end
     end
@@ -129,11 +131,14 @@ for t = 1:N
 % Qmf = zeros(length(states_total),2);
 % Q2 = zeros(nstates,1);    
     % store stuff
-    output.A(t,1) = a;
-    output.R(t,1) = r;
-%     output.S(t,1) = s-1;
-    output.S(t,1) = s;
+    
+%     output.S(t,1) = s-1;    
+    
+    output.choices(t,1) = a;
+    output.rewards(t,1) = r;
+    output.second_state(t,1) = s;
     output.C(t,1) = tr_prob<tr;
+    output.first_state(t,:) = [current_state current_state_index];
     
 end
 

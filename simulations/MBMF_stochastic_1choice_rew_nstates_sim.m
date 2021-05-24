@@ -25,8 +25,8 @@ function output = MBMF_stochastic_1choice_rew_nstates_sim(x,rew, states_total, n
 % Wouter Kool, Aug 2016, based on code written by Sam Gershman
 
 % parameters
-b = x(1);                   % softmax inverse temperature
-lr = x(2);                  % learning rate
+lr = x(1);                  % learning rate
+b = x(2);                   % softmax inverse temperature
 lambda = x(3);              % eligibility trace decay
 w = x(4);                   % mixing weight
 
@@ -34,7 +34,7 @@ tr = 0.7;                   % common transition probability
 
 % initialization
 % Qmf = zeros(1,2);           % Q(s,a): state-action value function for Q-learning
-Qmf = zeros(length(states_total),2);
+Qmf = zeros(size(states_total,1),2);
 Q2 = zeros(nstates,1);
 % Tm = [.3 .7; .7 .3];        % transition matrix
 Tm = [.7 .3; .3 .7];
