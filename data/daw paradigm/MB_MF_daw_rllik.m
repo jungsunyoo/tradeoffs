@@ -10,7 +10,7 @@ function LL = MB_MF_daw_rllik(x,subdata,opts)
 %
 % Wouter Kool, Aug 2016 (based on code by Samuel J. Gershman)
 
-y = zeros(1,6);
+y = zeros(1,8);
 y(opts.ix==1) = x;
 
 switch opts.model
@@ -25,14 +25,23 @@ end
 if ~opts.respst
     y(6) = 0;
 end
+if opts.polynomial<1
+    y(7) = 0;
+end
+if opts.polynomial<2
+    y(8) = 0;
+end
+
 
 % parameters
 b = y(1);           % softmax inverse temperature
 lr = y(2);          % learning rate
 lambda = y(3);      % eligibility trace decay
-w = y(4);           % mixing weight
+w0 = y(4);           % mixing weight
 st = y(5);          % stickiness
 respst = y(6);      % stickiness
+w1 = y(7);
+w2 = y(8);
 
 % initialization
 Qd = zeros(3,2);            % Q(s,a): state-action value function for Q-learning
@@ -62,7 +71,26 @@ for t = 1:N
     
     maxQ = max(Qd(2:3,:),[],2);                                                 % optimal reward at second step
     Qm = Tm'*maxQ;                                                              % compute model-based value function
-
+%     if exponent == 1
+%         w_ = w0 + ((trial-N/2)*w1)/100; % linear
+%     else
+%         w_ = w0 + ((trial-N/2)*w1)/100 + (((trial-N/2)/100)^2)*w2;    % quadratic
+%     end
+%     
+%     w = 1/(1+exp(-w_)); % sigmoid so that between 0-1        
+% 
+% 
+%     Q = w*Qmb + (1-w)*Qmf(current_state_index,:)';    
+    
+    if (opts.model ~= 3) && (opts.polynomial > 0)
+        w_ = w0 + ((t-N/2)*w1)/100 + (((t-N/2)/100)^2)*w2;
+        w = 1/(1+exp(-w_));
+    else
+        w = w0;
+    end
+    
+    
+    
     Q = w*Qm + (1-w)*Qd(1,:)' + st.*M + respst.*R;                              % mix TD and model-based values
         
     LL = LL + b*Q(subdata.choice1(t))-logsumexp(b*Q);                           % update likelihoods

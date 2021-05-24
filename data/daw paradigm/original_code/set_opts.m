@@ -6,21 +6,11 @@ function [opts, param] = set_opts(opts)
 %
 % Wouter Kool, Aug 2016
 
-opts.ix = ones(1,8);
-
-lb = 0;
-ub = 1;
-w_lb = -10;
-w_ub = 10;
-
+opts.ix = ones(1,6);
 
 if ~(opts.model==1), opts.ix(4) = 0; end
 if ~opts.st, opts.ix(5) = 0; end
 if ~opts.respst, opts.ix(6) = 0; end
-if opts.polynomial<2, opts.ix(8) = 0; end
-if opts.polynomial<1, opts.ix(7) = 0; w_lb = lb; w_ub = ub; end
-
-
 
 % create parameter structure
 g = [4.82 0.88];  % parameters of the gamma prior
@@ -31,18 +21,18 @@ param(1).ub = 20;  % upper bound
 
 param(2).name = 'learning rate';
 param(2).logpdf = @(x) 0;
-param(2).lb = lb;
-param(2).ub = ub;
+param(2).lb = 0;
+param(2).ub = 1;
 
 param(3).name = 'eligibility trace decay';
 param(3).logpdf = @(x) 0;
-param(3).lb = lb;
-param(3).ub = ub;
+param(3).lb = 0;
+param(3).ub = 1;
 
 param(4).name = 'mixing weight';
 param(4).logpdf = @(x) 0;
-param(4).lb = w_lb;
-param(4).ub = w_ub;
+param(4).lb = 0;
+param(4).ub = 1;
 
 mu = 0.15; sd = 1.42;   % parameters of choice stickiness
 param(5).name = 'choice stickiness';
@@ -55,16 +45,6 @@ param(6).name = 'response stickiness';
 param(6).logpdf = @(x) sum(log(normpdf(x,mu,sd)));
 param(6).lb = -20;
 param(6).ub = 20;
-
-param(7).name = 'w1';
-% param(7).logpdf = @(x) 0;
-param(7).lb = w_lb;
-param(7).ub = w_ub;
-
-param(8).name = 'w2';
-% param(8).logpdf = @(x) 0;
-param(8).lb = w_lb;
-param(8).ub = w_ub;
 
 param = param(opts.ix==1);
 
