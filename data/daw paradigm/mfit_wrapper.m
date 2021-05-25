@@ -11,7 +11,7 @@ function results = mfit_wrapper
 % Wouter Kool, Aug 2016
 
 load groupdata
-addpath('mfit')
+addpath('mfit_function')
 % addpath('/Users/yoojungsun0/Desktop/Repositories/mfit')
 
 opts.model = [1 2 3]; % 1 = hybrid model, 2 = model-based 3 = model-free
