@@ -39,12 +39,19 @@ param(3).logpdf = @(x) 0;
 param(3).lb = lb;
 param(3).ub = ub;
 
-param(4).name = 'mixing weight';
-param(4).logpdf = @(x) 0;
+mu = 0.15; sd = 1.42;   % parameters of choice stickiness
+param(4).name = 'w0';
+if opts.polynomial == 0
+    param(4).logpdf = @(x) 0;
+else
+    param(4).logpdf = @(x) sum(log(normpdf(x,mu,sd)));
+end
+% param(4).name = 'mixing weight';
+% param(4).logpdf = @(x) 0;
 param(4).lb = w_lb;
 param(4).ub = w_ub;
 
-mu = 0.15; sd = 1.42;   % parameters of choice stickiness
+% mu = 0.15; sd = 1.42;   % parameters of choice stickiness
 param(5).name = 'choice stickiness';
 param(5).logpdf = @(x) sum(log(normpdf(x,mu,sd)));
 param(5).lb = -20;

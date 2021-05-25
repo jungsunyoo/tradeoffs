@@ -22,6 +22,7 @@ opts.polynomial = [0 1 2]; % jungsun added: polynomial function for w
 opts = factorial_models(opts);
 
 nrstarts = 25;
+% nrstarts=4;
 nrmodels = length(opts);
 
 data = groupdata.subdata(groupdata.i);
@@ -38,7 +39,7 @@ for m = 1:nrmodels
     results(m).nest = m_;
     results(m).opts = opts(m);
     savename = ['daw_model_', num2str(m)];
-    save(savename, 'm_');
+    save(savename, 'results');
     
 end
 
