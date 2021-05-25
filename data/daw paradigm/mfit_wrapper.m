@@ -12,14 +12,16 @@ function results = mfit_wrapper
 
 load groupdata
 
-opts.model = [2];%[1 2 3]; % 1 = hybrid model, 2 = model-based 3 = model-free
+addpath('/Users/yoojungsun0/Desktop/Repositories/mfit')
+
+opts.model = [1 2 3]; % 1 = hybrid model, 2 = model-based 3 = model-free
 opts.st = [0 1]; % indexes presence of stimulus stickiness
 opts.respst = [0 1]; % indexes presence of response stickiness
 
-opts.polynomial = [0]; %[0 1 2]; % jungsun added: polynomial function for w 
+opts.polynomial = [0 1 2]; % jungsun added: polynomial function for w 
 opts = factorial_models(opts);
 
-nrstarts = 1;
+nrstarts = 25;
 nrmodels = length(opts);
 
 data = groupdata.subdata(groupdata.i);
@@ -32,10 +34,14 @@ for m = 1:nrmodels
     disp(['Fitting model ',num2str(m)])
     [options, params] = set_opts(opts(m));
     f = @(x,data) MB_MF_daw_rllik(x,data,options);
-    results(m).nest = mfit_optimize(f,params,data,nrstarts);
-    
-    results(m).opts = opts(model);
+    m_ = mfit_optimize(f,params,data,nrstarts);
+    results(m).nest = m_;
+    results(m).opts = opts(m);
+    savename = ['daw_model_', num2str(m)];
+    save(savename, 'm_');
     
 end
+
+save('daw_results_sum', 'results');
 
 end

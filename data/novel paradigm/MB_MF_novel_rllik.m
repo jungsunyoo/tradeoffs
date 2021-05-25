@@ -9,8 +9,7 @@ function  LL = MB_MF_novel_rllik(x,subdata,opts)
 % inclusion of stickiness parameters.
 %
 % Wouter Kool, Aug 2016
-
-y = zeros(1,6);
+y = zeros(1,8);
 y(opts.ix==1) = x;
 
 switch opts.model
@@ -25,14 +24,23 @@ end
 if ~opts.respst
     y(6) = 0;
 end
+if opts.polynomial<1
+    y(7) = 0;
+end
+if opts.polynomial<2
+    y(8) = 0;
+end
+
 
 % parameters
 b = y(1);           % softmax inverse temperature
 lr = y(2);          % learning rate
 lambda = y(3);      % eligibility trace decay
-w = y(4);           % mixing weight
-st = y(5);          % stimulus stickiness
-respst = y(6);      % response stickiness
+w0 = y(4);           % mixing weight
+st = y(5);          % stickiness
+respst = y(6);      % stickiness
+w1 = y(7);
+w2 = y(8);
 
 % initialization
 Qmf = zeros(2,2);               % Q(s,a): First-stage state-action values
@@ -42,7 +50,7 @@ Tm{1} = [.5 .5; .5 .5];         % transition matrix s1=1
 Tm{2} = [.5 .5; .5 .5];         % transition matrix s1 = 2
 M = [0 0; 0 0];                 % last choice structure
 R = [0; 0];                     % last choice structure
-N = size(subdata.choice1);
+N = size(subdata.choice1,1);
 LL = 0;
 
 Tmchanged(1) = 0;
@@ -67,6 +75,14 @@ for t = 1:N
     
     Qmb = Tm{s1}'*Q2;                                               % compute model-based value function
 
+    if (opts.model ~= 3) && (opts.polynomial > 0)
+        w_ = w0 + ((t-N/2)*w1)/100 + (((t-N/2)/100)^2)*w2;
+        w = 1/(1+exp(-w_));
+    else
+        w = w0;
+    end
+        
+    
     Q = w*Qmb + (1-w)*Qmf(s1,:)' + st.*M(s1,:)' + respst.*R;        % mix TD and model-based value
     
     LL = LL + b*Q(a) - logsumexp(b*Q);                              % update likelihoods

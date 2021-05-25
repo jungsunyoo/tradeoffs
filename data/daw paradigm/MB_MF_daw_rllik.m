@@ -51,7 +51,7 @@ R = [0; 0];                 % last response structure
 
 counts = zeros(2,2);        % counting transitions
 
-N = length(subdata.choice1);
+N = size(subdata.choice1,1); %length(subdata.choice1);
 
 LL = 0;
 
@@ -71,16 +71,7 @@ for t = 1:N
     
     maxQ = max(Qd(2:3,:),[],2);                                                 % optimal reward at second step
     Qm = Tm'*maxQ;                                                              % compute model-based value function
-%     if exponent == 1
-%         w_ = w0 + ((trial-N/2)*w1)/100; % linear
-%     else
-%         w_ = w0 + ((trial-N/2)*w1)/100 + (((trial-N/2)/100)^2)*w2;    % quadratic
-%     end
-%     
-%     w = 1/(1+exp(-w_)); % sigmoid so that between 0-1        
-% 
-% 
-%     Q = w*Qmb + (1-w)*Qmf(current_state_index,:)';    
+  
     
     if (opts.model ~= 3) && (opts.polynomial > 0)
         w_ = w0 + ((t-N/2)*w1)/100 + (((t-N/2)/100)^2)*w2;

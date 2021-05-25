@@ -57,12 +57,12 @@ param(6).lb = -20;
 param(6).ub = 20;
 
 param(7).name = 'w1';
-% param(7).logpdf = @(x) 0;
+param(7).logpdf = @(x) sum(log(normpdf(x,mu,sd)));
 param(7).lb = w_lb;
 param(7).ub = w_ub;
 
 param(8).name = 'w2';
-% param(8).logpdf = @(x) 0;
+param(8).logpdf = @(x) sum(log(normpdf(x,mu,sd)));
 param(8).lb = w_lb;
 param(8).ub = w_ub;
 
