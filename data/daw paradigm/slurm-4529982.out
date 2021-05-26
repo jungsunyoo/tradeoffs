@@ -1,0 +1,16 @@
+MATLAB is selecting SOFTWARE OPENGL rendering.
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2020 The MathWorks, Inc.
+                  R2020a (9.8.0.1323502) 64-bit (glnxa64)
+                             February 25, 2020
+
+ 
+시작하려면 doc를 입력하십시오.
+제품 정보는 www.mathworks.com을 방문하십시오.
+ 
+[경고: 이름이 존재하지 않거나 디렉터리가 아님:
+/Users/yoojungsun0/Desktop/Repositories/mfit] 
+[> In path (line 109)
+  In addpath (line 86)
+  In mfit_wrapper (line 15)] 

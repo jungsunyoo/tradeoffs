@@ -1,0 +1,5 @@
+{'factorial_models'은(는) 인식할 수 없는 함수 또는 변수입니다.
+
+오류 발생: mfit_wrapper (line 22)
+opts = factorial_models(opts);
+} 

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#SBATCH --job-name=novel      ## Name of the job.
+#SBATCH -A bornstea_lab     ## account to charge 
+#SBATCH -p standard          ## partition/queue name
+#SBATCH --nodes=1            ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=10    ## number of cores the job needs
+#SBATCH --error=slurm-%J.err ## error log file
+
+module purge
+module load MATLAB/R2020a
+matlab -nodesktop -nosplash -singleCompThread -r mfit_wrapper -logfile output.out
