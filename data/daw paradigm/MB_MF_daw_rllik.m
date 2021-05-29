@@ -13,12 +13,12 @@ function LL = MB_MF_daw_rllik(x,subdata,opts)
 y = zeros(1,8);
 y(opts.ix==1) = x;
 
-switch opts.model
-    case 2   
-        y(4) = 1;
-    case 3
-        y(4) = 0;
-end
+% switch opts.model
+%     case 2   
+%         y(4) = 1;
+%     case 3
+%         y(4) = 0;
+% end
 if ~opts.st
     y(5) = 0;
 end

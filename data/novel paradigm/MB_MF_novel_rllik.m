@@ -12,12 +12,12 @@ function  LL = MB_MF_novel_rllik(x,subdata,opts)
 y = zeros(1,8);
 y(opts.ix==1) = x;
 
-switch opts.model
-    case 2   
-        y(4) = 1;
-    case 3
-        y(4) = 0;
-end
+% switch opts.model
+%     case 2   
+%         y(4) = 1;
+%     case 3
+%         y(4) = 0;
+% end
 if ~opts.st
     y(5) = 0;
 end
@@ -75,11 +75,31 @@ for t = 1:N
     
     Qmb = Tm{s1}'*Q2;                                               % compute model-based value function
 
-    if (opts.model ~= 3) && (opts.polynomial > 0)
-        w_ = w0 + ((t-N/2)*w1)/100 + (((t-N/2)/100)^2)*w2;
-        w = 1/(1+exp(-w_));
+    if opts.model == 1
+        if opts.polynomial > 0 %(opts.model ~= 3) && 
+            w_ = w0 + ((t-N/2)*w1)/100 + (((t-N/2)/100)^2)*w2;
+            w = 1/(1+exp(-w_));
+        else
+            w = w0;
+        end      
     else
-        w = w0;
+        if opts.polynomial == 2
+            if t<round(N/3)
+                w = w0;
+            elseif (round(N/3) <=t) && (t<round(N/3)*2)
+                w=w1;
+            else
+                w=w2;
+            end
+        elseif opts.polynomial == 1
+            if t<round(N/2)
+                w=w0;
+            else
+                w=w1;
+            end
+        else
+            w=w0;
+        end
     end
         
     

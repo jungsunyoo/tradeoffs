@@ -33,13 +33,20 @@ results = struct;
 for m = modelnum%1:nrmodels
     
     disp(['Fitting model ',num2str(m)])
+
+    if (opts(m).polynomial==0) && (opts(m).model==2)
+        % no need to run because overlap
+        disp('No need to run this model')
+        break
+    end        
+    
     [options, params] = set_opts(opts(m));
     f = @(x,data) MB_MF_novel_rllik(x,data,options);
 %     results(m) = mfit_optimize(f,params,data,nstarts);
     m_ = mfit_optimize(f,params,data,nrstarts);
     results(m).nest = m_;
     results(m).opts = opts(m);
-    savename = ['novel_model_', num2str(m)];
+    savename = ['novel_model_hybrid_', num2str(m)];
     save(savename, 'results');
     
 %     results(m).opts = opts(model);
