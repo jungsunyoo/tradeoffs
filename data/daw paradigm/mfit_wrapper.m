@@ -14,11 +14,12 @@ load groupdata
 addpath('mfit_function')
 % addpath('/Users/yoojungsun0/Desktop/Repositories/mfit')
 
-opts.model = [1 2 3]; % 1 = hybrid model, 2 = model-based 3 = model-free
+% opts.model = [1 2 3]; % 1 = hybrid model, 2 = model-based 3 = model-free
 opts.st = [0 1]; % indexes presence of stimulus stickiness
 opts.respst = [0 1]; % indexes presence of response stickiness
 
 opts.polynomial = [0 1 2]; % jungsun added: polynomial function for w 
+opts.model = [1 2]; % 1 = polynomial model, 2 = window model
 opts = factorial_models(opts);
 
 nrstarts = 25;
@@ -33,12 +34,19 @@ results = struct;
 for m = modelnum%1:nrmodels
     
     disp(['Fitting model ',num2str(m)])
+    
+    if (opts(m).polynomial==0) && (opts(m).model==2)
+        % no need to run because overlap
+        disp('No need to run this model')
+        break
+    end    
+    
     [options, params] = set_opts(opts(m));
     f = @(x,data) MB_MF_daw_rllik(x,data,options);
     m_ = mfit_optimize(f,params,data,nrstarts);
     results(m).nest = m_;
     results(m).opts = opts(m);
-    savename = ['daw_model_', num2str(m)];
+    savename = ['daw_model_hybrid_', num2str(m)];
     save(savename, 'results');
     
 end

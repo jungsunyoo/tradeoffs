@@ -14,7 +14,7 @@ w_lb = -10;
 w_ub = 10;
 
 
-if ~(opts.model==1), opts.ix(4) = 0; end
+if opts.model==3, opts.ix(4) = 0; end
 if ~opts.st, opts.ix(5) = 0; end
 if ~opts.respst, opts.ix(6) = 0; end
 if opts.polynomial<2, opts.ix(8) = 0; end
