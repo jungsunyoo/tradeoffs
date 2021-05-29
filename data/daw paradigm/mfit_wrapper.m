@@ -1,4 +1,4 @@
-function results = mfit_wrapper
+function results = mfit_wrapper(modelnum)
 
 % Function that fits behavioral data to reinforcement learning models
 % for the Daw two-step paradigm in Kool, Cushman, & Gershman (2016).
@@ -30,7 +30,7 @@ data = groupdata.subdata(groupdata.i);
 results = struct;
 
 % run optimization
-for m = 1:nrmodels
+for m = modelnum%1:nrmodels
     
     disp(['Fitting model ',num2str(m)])
     [options, params] = set_opts(opts(m));
@@ -43,6 +43,6 @@ for m = 1:nrmodels
     
 end
 
-save('daw_results_sum', 'results');
+% save('daw_results_sum', 'results');
 
 end
