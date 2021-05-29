@@ -1,4 +1,4 @@
-function results = mfit_wrapper
+function results = mfit_wrapper(modelnumber)
 
 % Function that fits behavioral data to reinforcement learning models
 % for the novel two-step paradigm in Kool, Cushman, & Gershman (2016).
@@ -17,7 +17,7 @@ addpath('mfit_function')
 opts.model = [1 2 3]; % 1 = hybrid model, 2 = model-based 3 = model-free
 opts.st = [0 1]; % indexes presence of stimulus stickiness
 opts.respst = [0 1]; % indexes presence of response stickiness
-opts.polynomial = [2 1 0]; % jungsun added: polynomial function for w 
+opts.polynomial = [0 1 2]; % jungsun added: polynomial function for w 
 
 opts = factorial_models(opts);
 
@@ -30,7 +30,7 @@ data = groupdata.subdata(groupdata.i);
 results = struct;
 
 % run optimization
-for m = 1:nrmodels
+for m = modelnumber  %1:nrmodels
     
     disp(['Fitting model ',num2str(m)])
     [options, params] = set_opts(opts(m));
@@ -45,5 +45,5 @@ for m = 1:nrmodels
 %     results(m).opts = opts(model);
     
 end
-save('novel_results_sum', 'results');
+%save('novel_results_sum', 'results');
 end
