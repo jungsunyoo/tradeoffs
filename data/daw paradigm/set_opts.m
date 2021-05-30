@@ -13,10 +13,11 @@ ub = 1;
 w_lb = -10;
 w_ub = 10;
 
-if opts.model==2 % if window model
-%     opts.ix(4) = 0
+if (opts.model==2) || (opts.polynomial==0) % if window model
+
     w_lb=lb;
     w_ub = ub;
+
 end
 % if opts.model==3, opts.ix(4) = 0; end
 if ~opts.st, opts.ix(5) = 0; end
@@ -45,7 +46,12 @@ param(3).ub = ub;
 
 mu = 0.15; sd = 1.42;   % parameters of choice stickiness
 if opts.model == 1
-    w_pdf =  @(x) sum(log(normpdf(x,mu,sd)));
+    if opts.polynomial>0
+        w_pdf =  @(x) sum(log(normpdf(x,mu,sd)));
+    else
+        w_pdf =  @(x) 0;
+    end
+    
 else
     w_pdf =  @(x) 0;
 end
