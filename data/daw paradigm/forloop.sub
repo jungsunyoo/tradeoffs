@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=novelmodel   ## Name of the job.
+#SBATCH --job-name=dawmodel   ## Name of the job.
 #SBATCH -A bornstea_lab     ## account to charge 
 #SBATCH -p standard          ## partition/queue name
 #SBATCH --nodes=1            ## (-N) number of nodes to use

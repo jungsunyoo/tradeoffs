@@ -1,1 +1,4 @@
 MBMF*.mat
+slurm*
+*.out
+*.err
