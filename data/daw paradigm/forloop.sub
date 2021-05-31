@@ -6,8 +6,6 @@
 #SBATCH --nodes=1            ## (-N) number of nodes to use
 #SBATCH --ntasks=1           ## (-n) number of tasks to launch
 #SBATCH --cpus-per-task=1    ## number of cores the job needs
-#SBATCH --sockets-per-node=2
-#SBATCH --cores-per-socket=3
 #SBATCH --error=slurm-%J.err ## error log file
 #SBATCH --mem=128G    #128G on a node
 

@@ -10,7 +10,7 @@ function LL = MB_MF_daw_rllik(x,subdata,opts)
 %
 % Wouter Kool, Aug 2016 (based on code by Samuel J. Gershman)
 
-y = zeros(1,8);
+y = zeros(1,10);
 y(opts.ix==1) = x;
 
 % switch opts.model
@@ -31,7 +31,12 @@ end
 if opts.polynomial<2
     y(8) = 0;
 end
-
+if opts.beta==1
+    y(9)=0;
+end
+if opts.alpha==1
+    y(10)=0;
+end
 
 % parameters
 b = y(1);           % softmax inverse temperature
@@ -42,6 +47,8 @@ st = y(5);          % stickiness
 respst = y(6);      % stickiness
 w1 = y(7);
 w2 = y(8);
+b2 = y(9);
+lr2 = y(10);
 
 % initialization
 Qd = zeros(3,2);            % Q(s,a): state-action value function for Q-learning
@@ -104,7 +111,15 @@ for t = 1:N
     Q = w*Qm + (1-w)*Qd(1,:)' + st.*M + respst.*R;                              % mix TD and model-based values
         
     LL = LL + b*Q(subdata.choice1(t))-logsumexp(b*Q);                           % update likelihoods
-    LL = LL + b*Qd(state2,subdata.choice2(t)) - logsumexp(b*Qd(state2,:));
+%     
+
+    if opts.beta==1
+        b_ = b;
+    else
+        b_ = b2;
+    end
+    
+    LL = LL + b_*Qd(state2,subdata.choice2(t)) - logsumexp(b_*Qd(state2,:));
 
     M = [0; 0];
     M(subdata.choice1(t)) = 1;                                                  % make the last choice sticky
@@ -120,8 +135,17 @@ for t = 1:N
     Qd(1,subdata.choice1(t)) = Qd(1,subdata.choice1(t)) + lr*dtQ(1);            % update TD value function
      
     dtQ(2) = subdata.win(t) - Qd(state2,subdata.choice2(t));                    % prediction error (2nd choice)
+
     
-    Qd(state2,subdata.choice2(t)) = Qd(state2,subdata.choice2(t)) + lr*dtQ(2);  % update TD value function
+    if opts.alpha == 1
+        lr_ = lr;
+    else
+        lr_  =lr2;
+    end
+    
+    
+    
+    Qd(state2,subdata.choice2(t)) = Qd(state2,subdata.choice2(t)) + lr_*dtQ(2);  % update TD value function
     Qd(1,subdata.choice1(t)) = Qd(1,subdata.choice1(t)) + lambda*lr*dtQ(2);     % eligibility trace
     
     % pick the most likely transition matrix

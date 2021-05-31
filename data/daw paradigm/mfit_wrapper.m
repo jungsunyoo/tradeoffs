@@ -17,7 +17,8 @@ addpath('mfit_function')
 % opts.model = [1 2 3]; % 1 = hybrid model, 2 = model-based 3 = model-free
 opts.st = [0 1]; % indexes presence of stimulus stickiness
 opts.respst = [0 1]; % indexes presence of response stickiness
-
+opts.alpha = [1 2]; % whether to use one or two lr
+opts.beta = [1 2]; % whether to use one or two beta
 opts.polynomial = [0 1 2]; % jungsun added: polynomial function for w 
 opts.model = [1 2]; % 1 = polynomial model, 2 = window model
 opts = factorial_models(opts);
