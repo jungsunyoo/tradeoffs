@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#SBATCH --job-name=dawpure   ## Name of the job.
+#SBATCH -A bornstea_lab     ## account to charge 
+#SBATCH -p standard          ## partition/queue name
+#SBATCH --nodes=1            ## (-N) number of nodes to use
+#SBATCH --ntasks=1           ## (-n) number of tasks to launch
+#SBATCH --cpus-per-task=1    ## number of cores the job needs
+#SBATCH --error=slurm-%J.err ## error log file
+#SBATCH --mem=128G    #128G on a node
+
+
+module purge
+module load MATLAB/R2020a
+
+matlab -nodesktop -nosplash -singleCompThread -r "mfit_wrapper_pure($1);" -logfile output_pure_model_${1}.out;i
