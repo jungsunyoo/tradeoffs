@@ -1,4 +1,4 @@
-function LL = MB_MF_daw_rllik(x,subdata,opts)
+function LL = pure_MB_MF_daw_rllik(x,subdata,opts)
 
 % Likelihood function for Daw two-step paradigm in Kool, Cushman, &
 % Gershman (2016).
@@ -10,46 +10,38 @@ function LL = MB_MF_daw_rllik(x,subdata,opts)
 %
 % Wouter Kool, Aug 2016 (based on code by Samuel J. Gershman)
 
-y = zeros(1,11);
+nstates = max(subdata.state2);
+states_total = max(subdata.q_mf); 
+
+y = zeros(1,8);
 y(opts.ix==1) = x;
 
-% switch opts.model
-%     case 2   
-%         y(4) = 1;
-%     case 3
-%         y(4) = 0;
-% end
 if ~opts.st
-    y(5) = 0;
+    y(4) = 0;
 end
 if ~opts.respst
-    y(6) = 0;
+    y(5) = 0;
 end
-if opts.polynomial<1
-    y(7) = 0;
-end
-if opts.polynomial<2
-    y(8) = 0;
+
+if opts.gamma==0
+    y(6)=0;
 end
 if opts.beta==1
-    y(9)=0;
+    y(7)=0;
 end
 if opts.alpha==1
-    y(10)=0;
+    y(8)=0;
 end
 
 % parameters
 b = y(1);           % softmax inverse temperature
 lr = y(2);          % learning rate
 lambda = y(3);      % eligibility trace decay
-w0 = y(4);           % mixing weight
-st = y(5);          % stickiness
-respst = y(6);      % stickiness
-w1 = y(7);
-w2 = y(8);
-b2 = y(9);
-lr2 = y(10);
-gamma = y(11);
+st = y(4);          % rocket stickiness
+respst = y(5);      % resp stickiness
+gamma = y(6);       % decay rate
+b2 = y(7);
+lr2 = y(8);
 
 
 % initialization
@@ -82,32 +74,11 @@ for t = 1:N
     Qm = Tm'*maxQ;                                                              % compute model-based value function
   
     
-    if opts.model == 1
-        if opts.polynomial > 0 %(opts.model ~= 3) && 
-            w_ = w0 + ((t-N/2)*w1)/100 + (((t-N/2)/100)^2)*w2;
-            w = 1/(1+exp(-w_));
-        else
-            w = w0;
-        end      
-    else
-        if opts.polynomial == 2
-            if t<round(N/3)
-                w = w0;
-            elseif (round(N/3) <=t) && (t<round(N/3)*2)
-                w=w1;
-            else
-                w=w2;
-            end
-        elseif opts.polynomial == 1
-            if t<round(N/2)
-                w=w0;
-            else
-                w=w1;
-            end
-        else
-            w=w0;
-        end
-    end
+    if opts.model == 1 % pure MB
+        w = 1;
+    else % pure MF
+        w = 0;
+    end    
     
     
     Q = w*Qm + (1-w)*Qd(1,:)' + st.*M + respst.*R;                              % mix TD and model-based values
@@ -164,27 +135,27 @@ for t = 1:N
     end
     
     
-%     if opts.gamma==1
+    if opts.gamma==1
         
     % Decaying unchosen states and/or action pairs for this trial
     %following is for step 2
-    for s_ = 2:3
-        for a_ = 1:2
-            if s_ ~= state2 || a_ ~= subdata.choice2(t)
-                Qd(s_,a_) = Qd(s_,a_) * (1-gamma);
+        for s_ = 2:3
+            for a_ = 1:2
+                if s_ ~= state2 || a_ ~= subdata.choice2(t)
+                    Qd(s_,a_) = Qd(s_,a_) * (1-gamma);
+                end
             end
         end
-    end
 
-    % following is for stage 1
-%     for s_ = 1
-    for a_ = 1:2
-        if a_~=subdata.choice1(t)
-            Qd(1,a_) = Qd(1,a_) * (1-gamma);
+        % following is for stage 1
+    %     for s_ = 1
+        for a_ = 1:2
+            if a_~=subdata.choice1(t)
+                Qd(1,a_) = Qd(1,a_) * (1-gamma);
+            end
         end
-    end
 %     end
-%     end    
+    end    
     
     
     

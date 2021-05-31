@@ -6,7 +6,7 @@ function [opts, param] = set_opts(opts)
 %
 % Wouter Kool, Aug 2016
 
-opts.ix = ones(1,10);
+opts.ix = ones(1,11);
 
 lb = 0;
 ub = 1;
@@ -94,6 +94,11 @@ param(10).logpdf = @(x) 0;
 param(10).lb = lb;
 param(10).ub = ub;
 
+
+param(11).name = 'memory decay';
+param(11).logpdf = @(x) 0;
+param(11).lb = lb;
+param(11).ub = ub;
 
 
 
